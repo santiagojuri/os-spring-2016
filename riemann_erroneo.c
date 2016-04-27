@@ -8,7 +8,6 @@
 * LAST REVISED: 14/04/16
 * REFERENCES: http://mathinsight.org/calculating_area_under_curve_riemann_sums
 ******************************************************************************/
-
 #include <stdio.h>
 #include <pthread.h>
 #include <math.h>
@@ -22,7 +21,7 @@ double result[MAXTHREAD];
 double length = LIMIT - BASE;
 double numRectxThread = (double)(MAXRECT/MAXTHREAD);
 double base_length = 0;
-
+/* aqui defino el semaforo*/
 double sumFinal = 0;
 
 
@@ -35,7 +34,9 @@ void* calcular(void *arg) {
 	double sumTotal = 0;
 
 	for (int i = 0; i < numRectxThread; i++) {
+		/*sem wait*/
 		sumTotal += function(lowlimit + i*base_length) * base_length;
+		/*sem signal*/
 	}
 
 	result[id]=sumTotal;
@@ -48,6 +49,7 @@ int main(int argc, char** argv) {
 
 	base_length = length/MAXRECT;
 	printf("base length: %lf numRectxThread: %lf\n",base_length, numRectxThread);
+	/*------ crear aqui el semaforo*/
 	for (int i = 0; i < MAXTHREAD; i++) {
 		taskids[i] = i;
 		pthread_create(&threads[i], NULL, calcular, (void*)taskids[i]);
